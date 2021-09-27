@@ -1,0 +1,28 @@
+@import "variables";
+@mixin button($color: green){
+  height: 24px;
+  min-width: 24px;
+  padding: 3px;
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  color: rgba(0, 0, 0, .7);
+  user-drag: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  border-radius: 2px;
+  &:hover{
+    background: #EEEEEE;
+    cursor: pointer;
+  }
+  &:active, &.active{
+    color: $color;
+  }
+  i{
+    font-size: 18px;
+  }
+}
+
+@mixin border(){
+  border: 1px solid $border_color;
+}
