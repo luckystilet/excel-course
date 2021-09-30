@@ -26,6 +26,43 @@ class Dom {
     }
     return this
   }
+  closest(selector) {
+    return $(this.$el.closest(selector))
+  }
+  getCoords() {
+    return this.$el.getBoundingClientRect()
+  }
+  get data() {
+    return this.$el.dataset
+  }
+  findAll(selector) {
+    return this.$el.querySelectorAll(selector)
+  }
+  find(selector) {
+    return this.$el.querySelector(selector)
+  }
+  $find(selector) {
+    return $(this.$el.querySelector(selector))
+  }
+  $findAll(selector) {
+    return $(this.$el.querySelectorAll(selector))
+  }
+  css(styles = {}) {
+    function addPxForNumbers(style, value) {
+      let resultValue = ('' + value).trim()
+      const charCodeLastSymbol = resultValue.charCodeAt(resultValue.length - 1)
+      const isDimensional = style !== 'lineHeight' && style !== 'opacity'
+      const isNumberCharCodeLastSymbol = charCodeLastSymbol > 47 && charCodeLastSymbol < 58
+      if (isNumberCharCodeLastSymbol && isDimensional) {
+        resultValue += 'px'
+      }
+      return resultValue
+    }
+    for (const [style, value] of Object.entries(styles)) {
+      this.$el.style[style] = addPxForNumbers(style, value)
+    }
+    return this
+  }
   on(eventType, callback) {
     this.$el.addEventListener(eventType, callback)
   }

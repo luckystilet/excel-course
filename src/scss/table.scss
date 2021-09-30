@@ -13,20 +13,25 @@
     height: $row_height;
   }
   .row-info{
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     min-width: $info_cell_with;
     height: 100%;
     border: solid 1px $border_color;
-    background: #f8f9fa;
+    background: #F8F9FA;
     border-top: none;
+    user-select: none;
+    user-drag: none;
+    -webkit-user-drag: none;
   }
   .column{
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #f8f9fa;
+    background: #F8F9FA;
     min-width: 40px;
     width: $cell_width;
     user-select: none;
@@ -45,7 +50,7 @@
     padding: 5px;
     width: $cell_width;
     height: 100%;
-    border: solid 1px #e2e3e3;
+    border: solid 1px #E2E3E3;
     border-left: none;
     border-top: none;
     color: #222222;
@@ -53,7 +58,30 @@
     outline: none;
     &.selected{
       z-index: 2;
-      outline: #3c74ff;
+      outline: $primary-color;
     }
+  }
+  .col-resize, .row-resize{
+    position: absolute;
+    background: $primary-color;
+    opacity: 0;
+    z-index: 999;
+    &:hover{
+      opacity: 1!important;
+    }
+  }
+  .col-resize{
+    right: -2px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    cursor: col-resize;
+  }
+  .row-resize{
+    right: 0;
+    left: 0;
+    bottom: -2px;
+    height: 3px;
+    cursor: row-resize;
   }
 }
