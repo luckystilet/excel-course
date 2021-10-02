@@ -35,19 +35,15 @@ export function tableResize($root, event) {
     })
   }
   document.onmousemove = e => {
-    console.log('onmousemove')
     if (isCol) {
       delta = e.pageX - coords.right
       $resizer.css({right: -delta})
     } else {
       delta = e.pageY - coords.bottom
       $resizer.css({bottom: -delta})
-      // const value = coords.height + delta
-      // $parent.css({height: value})
     }
   }
   document.onmouseup = (e) => {
-    console.log('onmouseup')
     document.onmousemove = null
     document.onmouseup = null
     if (isCol) {

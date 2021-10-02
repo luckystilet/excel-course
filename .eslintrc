@@ -13,7 +13,8 @@
     "operator-linebreak": "off",
     "max-len": [2, {"code": 120, "tabWidth": 4, "ignoreUrls": true}],
     "guard-for-in": "off",
-    "no-debugger": "off"
+    "no-debugger": "off",
+    "no-invalid-this": "off"
   },
   "extends": ["eslint:recommended", "google"]
 }

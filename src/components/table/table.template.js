@@ -8,13 +8,15 @@ const CODES = {
 // }
 
 
-function createCell(cellContent, coldIndex) {
-  coldIndex++
+function createCell(cellContent, colIndex, rowIndex) {
+  colIndex++
   return `
     <div
       class="cell"
       spellcheck="false"
-      data-col="${coldIndex}"
+      data-type="cell"
+      data-col="${colIndex}"
+      data-id="${rowIndex}:${colIndex}"
       contenteditable
     >${cellContent}</div>
   `
@@ -59,7 +61,7 @@ export function createTable(rowsCount = 15) {
   for (let i = 0; i < rowsCount; i++) {
     const columnsContent = []
     for (let j = 0; j < colsCount - 1; j++) {
-      columnsContent.push(createCell('' + i + j, j))
+      columnsContent.push(createCell('', j, i + 1))
     }
     rows.push(createRow(columnsContent.join(''), i + 1))
   }

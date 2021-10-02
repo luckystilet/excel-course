@@ -1,24 +1,35 @@
+import {$} from '@core/dom'
 import {ExcelComponent} from '@core/ExcelComponent'
+import {keyHandler} from '@/components/formula/formula.keyHandler'
 
 export class Formula extends ExcelComponent {
   static className = 'excel__formula'
-  constructor($root) {
-    super($root, {
-      name: 'formula',
-      listeners: ['input', 'click']
-    })
+  constructor($root, options = {}) {
+    options.name = 'Formula'
+    options.listeners = ['input', 'keydown']
+    super($root, options)
+  }
+  init() {
+    super.init()
+    this.$formula = this.$root.$find('#formula')
+    this.$on('table:select', text => this.$formula.text = text)
+    this.$on('table:input', text => this.$formula.text = text)
   }
   toHTML() {
     return `
       <div class="info">fx</div>
-      <div class="input" contenteditable="true" spellcheck="false"></div>
+      <div
+        class="input"
+        id="formula"
+        contenteditable="true"
+        spellcheck="false"
+      ></div>
     `
   }
   onInput(event) {
-    console.log('root === ', this.$root)
-    console.log('Formula: onInput', event.target.textContent.trim())
+    this.$emit('formula:input', $(event.target).text)
   }
-  onClick(event) {
-    console.log('event from onClick in the Formula component  === ', event)
+  onKeydown(event) {
+    keyHandler(event, this)
   }
 }
