@@ -4,7 +4,7 @@ export function keyHandler(event, Table) {
   if (!((keys.includes(key)) && !event.shiftKey)) return
   event.preventDefault()
   const idObjCurrent = Table.selection.idObjCurrent
-  const $next = Table.$root.$find(nextSelector(key, idObjCurrent))
+  const $next = Table.$root.find(nextSelector(key, idObjCurrent))
   Table.selection.select($next)
   Table.$emit('table:select', $next.text)
 }

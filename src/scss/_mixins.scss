@@ -17,6 +17,10 @@
   }
   &:active, &.active{
     color: $color;
+    filter: drop-shadow(1px 1px 0 #4444dd);
+    &:hover{
+      background: #4444dd;
+    }
   }
   i{
     font-size: 18px;

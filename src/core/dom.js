@@ -1,97 +1,137 @@
 class Dom {
-  constructor(selector) {
-    if (selector === null) {
-      throw new Error('"selector" for class Dom - should be provided')
-    }
-    this.$el = typeof selector === 'string'
-      ? document.querySelectorAll(selector)
-      : selector
-    this.#pretty$el()
-  }
-  #pretty$el() {
-    if (this.$el.nodeType !== Node.ELEMENT_NODE) {
-      if (this.$el.length === 1) {
-        this.$el = this.$el[0]
-        this.isList = false
-      } else if (this.$el.length === 0) {
-        console.log('The node list is empty')
+  constructor(selector, isEmpty = false) {
+    if (!selector && !isEmpty) throw new Error(`"${selector}" - is not valid selector for Dom class`)
+    this.$el = []
+    if (!isEmpty) {
+      if (typeof selector === 'string') {
+        this.$el = document.querySelectorAll(selector)
+      } else if (selector instanceof NodeList) {
+        this.$el = selector
+      } else if (selector instanceof HTMLCollection) {
+        for (const el of selector) {
+          this.$el.push(el)
+        }
+      } else if (selector instanceof Element) {
+        this.$el = [selector]
+      } else if (Array.isArray(selector) && selector[0] instanceof Element) {
+        selector.forEach($el => this.$el.push($el))
       } else {
-        this.isList = true
+        console.log('selector === ', selector)
+        throw new Error('In Class Dom constructor something went wrong, selector does not match any possible cases')
       }
     }
   }
+  findAll(selector) {
+    const result = []
+    this.$el.forEach($node => {
+      const $oneNodeResults = $node.querySelectorAll(selector)
+      $oneNodeResults.forEach($result => result.push($result))
+    })
+    return $(result)
+  }
+  find(selector) {
+    for (let i = 0; i < this.$el.length; i++) {
+      const result = this.$el[i].querySelector(selector)
+      if (result) {
+        return $(result)
+      }
+    }
+    return null
+  }
+  append($node) {
+    if ($node instanceof Dom) {
+      $node = $node.$el[0]
+    }
+    this.$el.forEach($el => {
+      $el.append($node)
+    })
+    return this
+  }
+  closest(selector) {
+    const result = []
+    this.$el.forEach($el => {
+      const closest = $el.closest(selector)
+      if (!closest) return
+      result.push(closest)
+    })
+    return result.length ? $(result) : null
+  }
+  add(elements) {
+    const result = [...this.$el]
+    if (elements === null || elements === undefined) {
+      return result
+    }
+    if (elements instanceof NodeList) {
+      // NodeList
+      elements.forEach(el => result.push(el))
+    } else if (elements instanceof HTMLCollection) {
+      // HTMLCollection
+      for (const el of elements) {
+        result.push(el)
+      }
+    } else if (elements instanceof Element) {
+      // Element
+      result.push(elements)
+    } else if (Array.isArray(elements) && elements[0] instanceof Dom) {
+      // Dom Array trust if 1st el is Dom then whole arr is Dom
+      elements.forEach($el => result.push($el.$el))
+    } else if (elements instanceof Dom) {
+      // Dom List / Dom List from single Dom node
+      elements.$el.forEach(el => {
+        result.push(el)
+      })
+    } else {
+      throw new Error('Dom: Not valid elements parameter in the "add()" method')
+    }
+    return $(result)
+  }
+  // node methods <--
   html(html) {
     if (typeof html === 'string') {
-      this.$el.innerHTML = html
+      this.$el.forEach($el => $el.innerHTML = html)
       return this
     }
-    return this.$el.outerHTML.trim()
+    return this.$el.map($el => $el.outerHTML.trim()).join('')
   }
   get text() {
     if (this.$el.tagName === 'INPUT') {
-      return this.$el.value.trim()
+      return this.$el[0].value.trim()
     } else {
-      return this.$el.textContent.trim()
+      return this.$el[0].textContent.trim()
     }
   }
   set text(text) {
     if (this.$el.tagName === 'INPUT') {
-      this.$el.value = text
+      this.$el[0].value = text
     } else {
-      this.$el.textContent = text
+      this.$el[0].textContent = text
     }
   }
   clear() {
     this.html('')
     return this
   }
-  append(node) {
-    if (node instanceof Dom) {
-      node = node.$el
-    }
-    if (Element.prototype.append) {
-      this.$el.append(node)
-    } else {
-      this.$el.appendChild(node)
-    }
-    return this
-  }
-  closest(selector) {
-    return $(this.$el.closest(selector))
-  }
   getCoords() {
     return this.$el.getBoundingClientRect()
   }
   get data() {
-    return this.$el.dataset
+    return this.$el[0].dataset
   }
-  findAll(selector) {
-    return this.$el.querySelectorAll(selector)
-  }
-  find(selector) {
-    return this.$el.querySelector(selector)
-  }
-  $find(selector) {
-    const result = this.$el.querySelector(selector)
-    return $(result)
-  }
-  $findAll(selector) {
-    return $(this.$el.querySelectorAll(selector))
-  }
-  addClass(className) {
-    if (this.isList) {
-      this.$el.forEach($el => $el.classList.add(className))
-    } else {
-      this.$el.classList.add(className)
+  id(id) {
+    if (id) {
+      this.$el[0].id = id
+      return this
     }
+    return this.$el[0].id
+  }
+  // Single or List
+  addClass(className) {
+    this.$el.forEach($el => $el.classList.add(className))
     return this
   }
+  // Single or List
   removeClass(className) {
-    if (this.isList) {
-      this.$el.forEach($el => $el.classList.remove(className))
-    } else {
-      this.$el.classList.remove(className)
-    }
+    this.$el.forEach($el => $el.classList.remove(className))
     return this
   }
   css(styles = {}) {
@@ -106,24 +146,32 @@ class Dom {
       return resultValue
     }
     for (const [style, value] of Object.entries(styles)) {
-      this.$el.style[style] = addPxForNumbers(style, value)
+      this.$el.forEach($node => {
+        $node.style[style] = addPxForNumbers(style, value)
+      })
     }
     return this
   }
   on(eventType, callback) {
-    this.$el.addEventListener(eventType, callback)
+    this.$el.forEach($el => {
+      $el.addEventListener(eventType, callback)
+    })
+    return this
   }
   off(eventType, callback) {
-    this.$el.addEventListener(eventType, callback)
+    this.$el.forEach($el => {
+      $el.removeEventListener(eventType, callback)
+    })
+    return this
   }
   focus() {
-    this.$el.focus()
+    this.$el[0].focus()
     return this
   }
 }
 
-export function $(selector) {
-  return new Dom(selector)
+export function $(selector, isEmpty) {
+  return new Dom(selector, isEmpty)
 }
 $.create = (tagName, classes = '') => {
   const el = document.createElement('div')

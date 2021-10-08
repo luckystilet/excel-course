@@ -12,7 +12,7 @@
   border-top: 1px solid $border_color;
   border-bottom: 1px solid $border_color;
   .button{
-    @include button(green);
+    @include button(pink);
   }
 }
 

@@ -1,12 +1,14 @@
+import {$} from '@core/dom'
+
 export class TableSelection {
   static className = 'selected'
   constructor() {
-    this.group = []
+    this.group = $('', true)
     this.current = null
   }
   select($el) {
     this.clear()
-    this.group.push($el)
+    this.group = this.group.add($el)
     $el.focus().addClass(TableSelection.className)
     this.current = $el
   }
@@ -31,13 +33,14 @@ export class TableSelection {
         queryStr += `[data-id="${idObjTopLeft.row + row}:${idObjTopLeft.col + col}"]`
       }
     }
-    const $cells = $root.$findAll(queryStr)
+    const $cells = $root.findAll(queryStr)
     this.group = $cells
     $cells.addClass(TableSelection.className)
   }
   clear() {
-    this.group.forEach($item => $item.removeClass(TableSelection.className))
-    this.group = []
+    if (!this.group.$el.length) return
+    this.group.removeClass(TableSelection.className)
+    this.group.$el = []
   }
   parse(stringId) {
     const arrIds = stringId.split(':')
@@ -45,5 +48,8 @@ export class TableSelection {
       row: + arrIds[0],
       col: + arrIds[1]
     }
+  }
+  applyStyle(style) {
+    this.group.css(style)
   }
 }

@@ -7,13 +7,13 @@ export class Formula extends ExcelComponent {
   constructor($root, options = {}) {
     options.name = 'Formula'
     options.listeners = ['input', 'keydown']
+    options.subscribe = ['currentText']
     super($root, options)
   }
   init() {
     super.init()
-    this.$formula = this.$root.$find('#formula')
+    this.$formula = this.$root.find('#formula')
     this.$on('table:select', text => this.$formula.text = text)
-    this.$on('table:input', text => this.$formula.text = text)
   }
   toHTML() {
     return `
@@ -25,6 +25,9 @@ export class Formula extends ExcelComponent {
         spellcheck="false"
       ></div>
     `
+  }
+  storeChanged(data) {
+    this.$formula.text = data.currentText
   }
   onInput(event) {
     this.$emit('formula:input', $(event.target).text)
