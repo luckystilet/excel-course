@@ -5,12 +5,13 @@ import {TableSelection} from '@/components/table/TableSelection'
 import {$} from '@core/dom'
 import {keyHandler} from '@/components/table/table.keyHandler'
 import * as actions from '@/redux/actions'
+import {defaultStyles} from '@/constants'
 
 export class Table extends ExcelComponent {
   static className = 'excel__table'
   constructor($root, options = {}) {
     options.name = 'Table'
-    options.listeners = ['mousedown', 'keydown', 'input']
+    options.listeners = ['mousedown', 'keydown', 'input', 'click']
     super($root, options)
   }
   prepare() {
@@ -19,8 +20,7 @@ export class Table extends ExcelComponent {
   init() {
     super.init()
     const $cell = this.$root.find('[data-id="1:1"]')
-    this.selection.select($cell)
-    this.$emit('table:select', $cell.text)
+    this.changeCell($cell)
     this.$on('formula:input', text => {
       this.selection.current.text = text
       this.updateInStore(text)
@@ -43,6 +43,12 @@ export class Table extends ExcelComponent {
   }
   get cellId() {
     return this.selection.current.data.id
+  }
+  changeCell($cell) {
+    this.selection.select($cell)
+    this.$emit('table:select', $cell.text)
+    const cellStyles = $cell.getStyles(Object.keys(defaultStyles))
+    this.$dispatch(actions.changeStyles(cellStyles))
   }
   updateInStore(text) {
     this.$dispatch(actions.changeText({
@@ -67,5 +73,10 @@ export class Table extends ExcelComponent {
   onInput(event) {
     // this.$emit('table:input', $(event.target).text)
     this.updateInStore($(event.target).text)
+  }
+  onClick(event) {
+    const $target = $(event.target)
+    if ($target.data.type !== 'cell') return
+    this.changeCell($target)
   }
 }

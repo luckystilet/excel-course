@@ -5,8 +5,7 @@ export function keyHandler(event, Table) {
   event.preventDefault()
   const idObjCurrent = Table.selection.idObjCurrent
   const $next = Table.$root.find(nextSelector(key, idObjCurrent))
-  Table.selection.select($next)
-  Table.$emit('table:select', $next.text)
+  Table.changeCell($next)
 }
 function nextSelector(key, {row, col}) {
   switch (key) {

@@ -2,12 +2,15 @@
 //   A: 65,
 //   Z: 90
 // }
+import {defaultStyles} from '@/constants'
+import {camelToDashCase} from '@core/utils'
+
 const CODES = {
   A: 65,
   Z: 75
 }
 
-function createCell(cellContent, colIndex, rowIndex, style) {
+function createCell(cellContent, colIndex, rowIndex, style = '') {
   return `
     <div
       class="cell"
@@ -61,8 +64,11 @@ function getWidth({colState = {}}, index) {
 function getCellStyle({rowState = {}, colState = {}}, colIndex, rowIndex) {
   const heightStr = rowState[rowIndex] ? 'height: ' + rowState[rowIndex] + 'px; ' : ''
   const widthStr = colState[colIndex] ? 'width: ' + colState[colIndex] + 'px; ' : ''
-  if (heightStr || widthStr) {
-    return `style="${heightStr}${widthStr}`.trim() + '"'
+  const defaultCellStyles = Object.keys(defaultStyles).map(key => {
+    return `${camelToDashCase(key)}:${defaultStyles[key]}`
+  }).join(';')
+  if (heightStr || widthStr || defaultCellStyles) {
+    return `style="${heightStr}${widthStr}`.trim() + defaultCellStyles + ';"'
   }
   return ''
 }
@@ -89,7 +95,7 @@ export function createTable(rowsCount = 15, state) {
       .join('')
   rows.push(createRow(cols))
   // table body
-  for (let i = 1; i < rowsCount + 1; i++) {
+  for (let i = 1; i <= rowsCount; i++) {
     const columnsContent = []
     for (let colIndex = 1; colIndex <= colsCount; colIndex++) {
       const rowIndex = i

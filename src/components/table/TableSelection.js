@@ -1,4 +1,5 @@
 import {$} from '@core/dom'
+import {defaultStyles} from '@/constants'
 
 export class TableSelection {
   static className = 'selected'

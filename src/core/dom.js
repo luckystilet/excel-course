@@ -1,4 +1,10 @@
 class Dom {
+  #isSingleNodeCheck(methodName = 'unknown') {
+    if (this.$el.length > 1) {
+      console.warn(`Dom: method ".${methodName}()" work with this.$el = [$node] only,
+      current length = ${this.$el.length}`)
+    }
+  }
   constructor(selector, isEmpty = false) {
     if (!selector && !isEmpty) throw new Error(`"${selector}" - is not valid selector for Dom class`)
     this.$el = []
@@ -16,11 +22,11 @@ class Dom {
       } else if (Array.isArray(selector) && selector[0] instanceof Element) {
         selector.forEach($el => this.$el.push($el))
       } else {
-        console.log('selector === ', selector)
         throw new Error('In Class Dom constructor something went wrong, selector does not match any possible cases')
       }
     }
   }
+  // Change Selection Methods --------------------------------------->
   findAll(selector) {
     const result = []
     this.$el.forEach($node => {
@@ -37,15 +43,6 @@ class Dom {
       }
     }
     return null
-  }
-  append($node) {
-    if ($node instanceof Dom) {
-      $node = $node.$el[0]
-    }
-    this.$el.forEach($el => {
-      $el.append($node)
-    })
-    return this
   }
   closest(selector) {
     const result = []
@@ -85,7 +82,16 @@ class Dom {
     }
     return $(result)
   }
-  // node methods <--
+  // Node methods -------------------------------------->
+  append($node) {
+    if ($node instanceof Dom) {
+      $node = $node.$el[0]
+    }
+    this.$el.forEach($el => {
+      $el.append($node)
+    })
+    return this
+  }
   html(html) {
     if (typeof html === 'string') {
       this.$el.forEach($el => $el.innerHTML = html)
@@ -111,9 +117,7 @@ class Dom {
     this.html('')
     return this
   }
-  getCoords() {
-    return this.$el.getBoundingClientRect()
-  }
+  // Attributes -------------------------------------->
   get data() {
     return this.$el[0].dataset
   }
@@ -124,12 +128,10 @@ class Dom {
     }
     return this.$el[0].id
   }
-  // Single or List
   addClass(className) {
     this.$el.forEach($el => $el.classList.add(className))
     return this
   }
-  // Single or List
   removeClass(className) {
     this.$el.forEach($el => $el.classList.remove(className))
     return this
@@ -152,6 +154,14 @@ class Dom {
     }
     return this
   }
+  getStyles(styles = []) {
+    this.#isSingleNodeCheck('getStyles')
+    return styles.reduce((res, s) => {
+      res[s] = this.$el[0].style[s]
+      return res
+    }, {})
+  }
+  // Events ------------------------------------------>
   on(eventType, callback) {
     this.$el.forEach($el => {
       $el.addEventListener(eventType, callback)
@@ -167,6 +177,10 @@ class Dom {
   focus() {
     this.$el[0].focus()
     return this
+  }
+  // Other ------------------------------------------>
+  getCoords() {
+    return this.$el.getBoundingClientRect()
   }
 }
 
