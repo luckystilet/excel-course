@@ -13,7 +13,7 @@ export class Formula extends ExcelComponent {
   init() {
     super.init()
     this.$formula = this.$root.find('#formula')
-    this.$on('table:select', text => this.$formula.text = text)
+    this.$on('table:select', $cell => this.$formula.text = $cell.data.value)
   }
   toHTML() {
     return `

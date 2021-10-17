@@ -2,8 +2,10 @@ class Dom {
   #isSingleNodeCheck(methodName = 'unknown') {
     if (this.$el.length > 1) {
       console.warn(`Dom: method ".${methodName}()" work with this.$el = [$node] only,
-      current length = ${this.$el.length}`)
+      current length = ${this.$el.length}, should be length = 1`)
+      return true
     }
+    return false
   }
   constructor(selector, isEmpty = false) {
     if (!selector && !isEmpty) throw new Error(`"${selector}" - is not valid selector for Dom class`)
@@ -100,14 +102,16 @@ class Dom {
     return this.$el.map($el => $el.outerHTML.trim()).join('')
   }
   get text() {
-    if (this.$el.tagName === 'INPUT') {
+    if (this.#isSingleNodeCheck('text')) return ''
+    if (this.$el[0].tagName === 'INPUT') {
       return this.$el[0].value.trim()
     } else {
       return this.$el[0].textContent.trim()
     }
   }
   set text(text) {
-    if (this.$el.tagName === 'INPUT') {
+    if (this.#isSingleNodeCheck('text')) return
+    if (this.$el[0].tagName === 'INPUT') {
       this.$el[0].value = text
     } else {
       this.$el[0].textContent = text
@@ -118,6 +122,15 @@ class Dom {
     return this
   }
   // Attributes -------------------------------------->
+  attr(name, value) {
+    if (this.#isSingleNodeCheck('attr')) return
+    if (!value) {
+      return this.$el[0].getAttribute(name)
+    } else {
+      this.$el[0].setAttribute(name, value)
+      return this
+    }
+  }
   get data() {
     return this.$el[0].dataset
   }

@@ -16,6 +16,9 @@ export class TableSelection {
   get idObjCurrent() {
     return this.parse(this.current.data.id)
   }
+  get selectedIds() {
+    return this.group.$el.map($node => $node.dataset.id)
+  }
   selectGroup($el, $root) {
     const idObjCurrent = this.idObjCurrent
     const idObjTarget = this.parse($el.data.id)

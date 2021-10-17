@@ -19,6 +19,7 @@
     "no-unused-vars": "off",
     "no-case-declarations": "off",
     "no-prototype-builtins": "off",
+    "no-empty": "off",
     "no-trailing-spaces": "off"
   },
   "extends": ["eslint:recommended", "google"]

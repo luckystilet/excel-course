@@ -2,8 +2,11 @@
 //   A: 65,
 //   Z: 90
 // }
+
+
+import {toInlineStyles} from '@core/utils'
 import {defaultStyles} from '@/constants'
-import {camelToDashCase} from '@core/utils'
+import {parse} from '@core/parse'
 
 const CODES = {
   A: 65,
@@ -14,13 +17,14 @@ function createCell(cellContent, colIndex, rowIndex, style = '') {
   return `
     <div
       class="cell"
-      spellcheck="false"
+      data-id="${rowIndex}:${colIndex}"
       data-type="cell"
       data-col="${colIndex}"
-      data-id="${rowIndex}:${colIndex}"
       contenteditable
+      spellcheck="false"
+      data-value="${cellContent || ''}"
       ${style}
-    >${cellContent}</div>
+    >${parse(cellContent) || ''}</div>
   `
 }
 
@@ -61,12 +65,14 @@ function getWidth({colState = {}}, index) {
   return colState[index] ? colState[index] + 'px' : null
 }
 
-function getCellStyle({rowState = {}, colState = {}}, colIndex, rowIndex) {
+function getCellStyle({rowState = {}, colState = {}, stylesState = {}}, colIndex, rowIndex) {
+  const id = `${rowIndex}:${colIndex}`
   const heightStr = rowState[rowIndex] ? 'height: ' + rowState[rowIndex] + 'px; ' : ''
   const widthStr = colState[colIndex] ? 'width: ' + colState[colIndex] + 'px; ' : ''
-  const defaultCellStyles = Object.keys(defaultStyles).map(key => {
-    return `${camelToDashCase(key)}:${defaultStyles[key]}`
-  }).join(';')
+  const defaultCellStyles = toInlineStyles({
+    ...defaultStyles,
+    ...stylesState[id]
+  })
   if (heightStr || widthStr || defaultCellStyles) {
     return `style="${heightStr}${widthStr}`.trim() + defaultCellStyles + ';"'
   }
