@@ -20,7 +20,8 @@
     "no-case-declarations": "off",
     "no-prototype-builtins": "off",
     "no-empty": "off",
-    "no-trailing-spaces": "off"
+    "no-trailing-spaces": "off",
+    "no-array-constructor": "off"
   },
   "extends": ["eslint:recommended", "google"]
 }

@@ -95,7 +95,7 @@ class Dom {
     return this
   }
   html(html) {
-    if (typeof html === 'string') {
+    if (typeof html !== 'undefined') {
       this.$el.forEach($el => $el.innerHTML = html)
       return this
     }
@@ -193,7 +193,8 @@ class Dom {
   }
   // Other ------------------------------------------>
   getCoords() {
-    return this.$el.getBoundingClientRect()
+    if (this.#isSingleNodeCheck('getCoords')) return
+    return this.$el[0].getBoundingClientRect()
   }
 }
 
@@ -205,3 +206,4 @@ $.create = (tagName, classes = '') => {
   if (classes) el.className = classes
   return $(el)
 }
+// if (this.#isSingleNodeCheck('text')) return

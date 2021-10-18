@@ -34,3 +34,9 @@ export function debounce(fn, wait) {
     timeout = setTimeout(later, wait)
   }
 }
+export function clone(data) {
+  return JSON.parse(JSON.stringify(data))
+}
+export function preventDefault(e) {
+  e.preventDefault()
+}
